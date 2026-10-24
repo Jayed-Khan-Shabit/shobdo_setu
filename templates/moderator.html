@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Moderator Center - Shobdo Setu</title>
+    <link rel="stylesheet" href="/static/style.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="box top">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <img src="/static/logo.png" class="logo">
+            <h2>Moderator Panel</h2>
+        </div>
+        <a href="/">← Back to Translator</a>
+    </div>
+    <div class="box">
+        <h2>Publish Official Sign</h2>
+        <p>Show hand to camera and publish directly to the dictionary</p>
+        
+        <video id="webcam" playsinline></video>
+        <canvas id="output_canvas"></canvas>
+        
+        <input type="text" id="offName" placeholder="Sign Word (e.g., Help)">
+        <button class="btn-blue" onclick="addOfficial()">Publish Official Sign</button>
+    </div>
+    <div class="box">
+        <h2>Pending Submissions</h2>
+        <div id="pendDiv" style="margin-top: 8px; color: #666; font-size: 0.9rem;">Loading...</div>
+    </div>
+    <div class="box">
+        <h2>Approved Vocabulary Database</h2>
+        <div id="apprDiv" style="margin-top: 8px; color: #666; font-size: 0.9rem;">Loading...</div>
+    </div>
+</div>
+
+<script src="/static/moderator.js"></script>
+</body>
+</html>
