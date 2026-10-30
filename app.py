@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 import sqlite3
+from gtts import gTTS
 
 app = Flask(__name__)
 fn = 'gestures.db'
@@ -65,6 +66,19 @@ def appr_g(id):
 def del_g(id):
     run_sql("DELETE FROM gestures WHERE id=?", (id,))
     return jsonify({'message': 'Deleted!'})
+
+@app.route('/api/speak', methods=['POST'])
+def speak_text():
+    data = request.json
+    text = data.get('text', '')
+    if not text:
+        return jsonify({'error': 'No text provided'}), 400
+    
+    tts = gTTS(text=text, lang='en', slow=False)
+    audio_path = 'static/speech.mp3'
+    tts.save(audio_path)
+    
+    return send_file(audio_path, mimetype='audio/mp3')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

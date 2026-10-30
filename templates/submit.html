@@ -1,39 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Submit Sign - Shobdo Setu</title>
     <link rel="stylesheet" href="/static/style.css">
-    
+
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
+        crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 </head>
+
 <body>
 
-<div class="wrapper">
-    <div class="box top">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <img src="/static/logo.png" class="logo">
-            <h2>Submit New Sign</h2>
+    <div class="wrapper">
+        <div class="box top">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <img src="/static/logo.png" class="logo">
+                <h2>Submit New Sign</h2>
+            </div>
+            <a href="/">← Back</a>
         </div>
-        <a href="/">← Back</a>
+
+        <div class="box">
+            <h2>Record Gesture</h2>
+            <p>Show your sign to the camera, freeze it, and type the word below</p>
+
+            <video id="webcam" playsinline></video>
+            <canvas id="output_canvas"></canvas>
+
+            <div id="stat"
+                style="font-weight:bold; color:#007bff; margin:14px 0; text-align:center; font-size: 1.1rem;">Waiting
+                for hand...</div>
+
+            <button type="button" id="freezeBtn" class="btn-blue" style="margin-bottom: 8px; background: #6c757d;"
+                onclick="toggleFreeze()">Freeze Sign</button>
+            <input type="text" id="wordIn" placeholder="Type word (e.g., Water / সাহায্য)">
+            <button class="btn-green" style="width: 100%;" onclick="sendSign()">Submit Sign</button>
+        </div>
     </div>
 
-    <div class="box">
-        <h2>Record Gesture</h2>
-        <p>Show your sign to the camera and type the word below</p>
-        
-        <video id="webcam" playsinline></video>
-        <canvas id="output_canvas"></canvas>
-
-        <div id="stat" style="font-weight:bold; color:#007bff; margin:14px 0; text-align:center; font-size: 1.1rem;">Waiting for hand...</div>
-        
-        <input type="text" id="wordIn" placeholder="Type word (e.g., Water / সাহায্য)">
-        <button class="btn-green" onclick="sendSign()">Submit Sign</button>
-    </div>
-</div>
-
-<script src="/static/submit.js"></script>
+    <script src="/static/submit.js"></script>
 </body>
+
 </html>

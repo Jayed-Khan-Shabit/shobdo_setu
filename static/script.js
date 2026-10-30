@@ -4,145 +4,137 @@ let currWord = "";
 let holdCount = 0;
 let lastAdded = "";
 
-async function init() {
-    let res = await fetch('/api/get_approved_gestures');
-    let data = await res.json();
-    signs = data.map(item => ({ sign_name: item.sign_name, vector: JSON.parse(item.vector_array) }));
-    startWebcam();
-}
+const video = document.getElementById('webcam');
+const canvas = document.getElementById('output_canvas');
+const ctx = canvas.getContext('2d');
+const wordBox = document.getElementById('wordBox');
+const sentenceBox = document.getElementById('sentenceBox');
 
-function startWebcam() {
-    const video = document.getElementById('webcam');
-    const canvas = document.getElementById('output_canvas');
-    const ctx = canvas.getContext('2d');
-
-    const hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
-    hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.6, minTrackingConfidence: 0.6 });
-
-    hands.onResults((res) => {
-        if (res.image) {
-            canvas.width = res.image.width;
-            canvas.height = res.image.height;
-        }
-        ctx.save();
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(res.image, 0, 0, canvas.width, canvas.height);
-
-        if (res.multiHandLandmarks && res.multiHandLandmarks.length > 0) {
-            res.multiHandLandmarks.forEach(marks => {
-                drawConnectors(ctx, marks, HAND_CONNECTIONS, {color: '#00ff00', lineWidth: 2});
-                drawLandmarks(ctx, marks, {color: '#ff0000', lineWidth: 1, radius: 3});
-            });
-            processHands(res.multiHandLandmarks);
-        } else {
-            processHands(null);
-        }
-        ctx.restore();
+fetch('/api/get_approved_gestures')
+    .then(r => r.json())
+    .then(data => {
+        signs = data.map(i => ({ name: i.sign_name, vec: JSON.parse(i.vector_array) }));
     });
 
-    const cam = new Camera(video, {
-        onFrame: async () => { await hands.send({ image: video }); },
-        width: 1280, height: 720
-    });
-    cam.start();
-}
-
-function getHandVector(marks) {
-    let wrist = marks[0];
-    let dx = marks[9].x - wrist.x;
-    let dy = marks[9].y - wrist.y;
-    let dz = marks[9].z - wrist.z;
+function getVec(marks) {
+    let w = marks[0];
+    let dx = marks[9].x - w.x, dy = marks[9].y - w.y, dz = marks[9].z - w.z;
     let scale = Math.sqrt(dx*dx + dy*dy + dz*dz) || 1;
-
-    let vec = [];
-    marks.forEach(p => {
-        vec.push(
-            parseFloat(((p.x - wrist.x)/scale).toFixed(3)),
-            parseFloat(((p.y - wrist.y)/scale).toFixed(3)),
-            parseFloat(((p.z - wrist.z)/scale).toFixed(3))
+    let v = [];
+    for (let i = 0; i < marks.length; i++) {
+        v.push(
+            +(Math.abs(marks[i].x - w.x) / scale).toFixed(3),
+            +((marks[i].y - w.y) / scale).toFixed(3),
+            +((marks[i].z - w.z) / scale).toFixed(3)
         );
-    });
-    return vec;
+    }
+    return v;
 }
 
-function findBestMatch(liveVec) {
-    let bestMatch = null;
-    let highestSim = 0;
-
-    signs.forEach(item => {
-        let dbVec = item.vector;
-        if (liveVec.length === dbVec.length) {
-            let dot = 0, nA = 0, nB = 0;
-            for (let i = 0; i < liveVec.length; i++) {
-                dot += liveVec[i] * dbVec[i];
-                nA += liveVec[i] * liveVec[i];
-                nB += dbVec[i] * dbVec[i];
-            }
-            let sim = (nA === 0 || nB === 0) ? 0 : dot / (Math.sqrt(nA) * Math.sqrt(nB));
-            if (sim > highestSim) {
-                highestSim = sim;
-                bestMatch = item.sign_name;
-            }
+function findMatch(live) {
+    let best = null, maxSim = 0;
+    for (let s of signs) {
+        if (s.vec.length !== live.length) continue;
+        let dot = 0, nA = 0, nB = 0;
+        for (let i = 0; i < live.length; i++) {
+            dot += live[i] * s.vec[i];
+            nA += live[i] * live[i];
+            nB += s.vec[i] * s.vec[i];
         }
-    });
-    return highestSim > 0.93 ? bestMatch : null;
+        let sim = dot / (Math.sqrt(nA) * Math.sqrt(nB) || 1);
+        if (sim > maxSim) { maxSim = sim; best = s.name; }
+    }
+    return maxSim > 0.88 ? best : null;
 }
 
-function processHands(handsData) {
-    let box = document.getElementById('wordBox');
+const hands = new Hands({ locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}` });
+hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.6, minTrackingConfidence: 0.6 });
 
-    if (!handsData) {
-        box.innerText = "No hand found";
-        currWord = "";
-        holdCount = 0;
+hands.onResults(res => {
+    canvas.width = res.image.width;
+    canvas.height = res.image.height;
+    ctx.drawImage(res.image, 0, 0);
+
+    if (!res.multiHandLandmarks || !res.multiHandLandmarks[0]) {
+        wordBox.innerText = "No hand found";
+        wordBox.style.color = "#007bff";
+        currWord = ""; 
+        holdCount = 0; 
         lastAdded = "";
         return;
     }
 
-    let liveVec = [];
-    handsData.forEach(m => { liveVec.push(...getHandVector(m)); });
+    let marks = res.multiHandLandmarks[0];
+    drawConnectors(ctx, marks, HAND_CONNECTIONS, {color: '#00ff00', lineWidth: 2});
+    drawLandmarks(ctx, marks, {color: '#ff0000', lineWidth: 1, radius: 3});
 
-    let match = findBestMatch(liveVec);
-
+    let match = findMatch(getVec(marks));
     if (match) {
-        box.innerText = match;
-        box.style.color = "#28a745";
+        wordBox.innerText = match;
+        wordBox.style.color = "#28a745";
 
         if (match === currWord) {
             holdCount++;
-            if (holdCount === 20 && match !== lastAdded) {
+            if (holdCount === 15 && match !== lastAdded) {
                 sentence.push(match);
                 lastAdded = match;
-                document.getElementById('sentenceBox').innerText = sentence.join(" ");
+                sentenceBox.innerText = sentence.join(" ");
             }
         } else {
             currWord = match;
-            holdCount = 0;
+            holdCount = 1;
         }
     } else {
-        box.innerText = "Unrecognized";
-        box.style.color = "#dc3545";
-        currWord = "";
+        wordBox.innerText = "Unrecognized";
+        wordBox.style.color = "#dc3545";
+        currWord = ""; 
         holdCount = 0;
+        lastAdded = "";
     }
-}
+});
+
+new Camera(video, {
+    onFrame: async () => await hands.send({ image: video }),
+    width: 640, height: 480
+}).start();
 
 function undoText() {
     sentence.pop();
     lastAdded = "";
-    document.getElementById('sentenceBox').innerText = sentence.length === 0 ? "Start signing..." : sentence.join(" ");
+    sentenceBox.innerText = sentence.length ? sentence.join(" ") : "Start signing...";
 }
 
 function clearText() {
     sentence = [];
     lastAdded = "";
-    document.getElementById('sentenceBox').innerText = "Start signing...";
+    sentenceBox.innerText = "Start signing...";
 }
 
-function speakText() {
-    if (sentence.length === 0) return;
-    let speech = new SpeechSynthesisUtterance(sentence.join(" "));
-    window.speechSynthesis.speak(speech);
-}
+window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
 
-init();
+async function speakText() {
+    if (!sentence.length) return;
+    let fullText = sentence.join(" ");
+    
+    try {
+        let res = await fetch('/api/speak', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: fullText })
+        });
+        if (res.ok) {
+            let blob = await res.blob();
+            let audio = new Audio(URL.createObjectURL(blob));
+            audio.play();
+            return;
+        }
+    } catch (e) {}
+
+    window.speechSynthesis.cancel();
+    let msg = new SpeechSynthesisUtterance(fullText);
+    let voices = window.speechSynthesis.getVoices();
+    let bestVoice = voices.find(v => v.name.includes("Google") || v.lang === "en-US");
+    if (bestVoice) msg.voice = bestVoice;
+    msg.rate = 0.95;
+    window.speechSynthesis.speak(msg);
+}
