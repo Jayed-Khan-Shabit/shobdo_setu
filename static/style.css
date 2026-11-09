@@ -1,56 +1,110 @@
-* { box-sizing: border-box; margin: 0; padding: 0; }
 body {
     font-family: Arial, sans-serif;
-    background: #f4f4f4;
+    background: #f4f6f9;
+    margin: 0;
     padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
+    text-align: center;
+    color: #222;
 }
+
 .wrapper {
-    width: 100%;
-    max-width: 700px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+    max-width: 900px;
+    margin: 0 auto;
 }
+
 .box {
-    width: 100%;
     background: #fff;
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
-.top {
+
+video {
+    display: none;
+}
+
+canvas {
+    width: 100%;
+    max-width: 640px;
+    border-radius: 8px;
+    background: #000;
+    transform: scaleX(-1);
+}
+
+input[type="text"],
+input[type="password"] {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 60%;
+    max-width: 300px;
+}
+
+button {
+    padding: 10px 16px;
+    font-size: 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+    color: #fff;
+    font-weight: bold;
+}
+
+.btn-blue {
+    background: #007bff;
+}
+
+.btn-green {
+    background: #28a745;
+}
+
+.btn-red {
+    background: #dc3545;
+}
+
+.btn-orange {
+    background: #fd7e14;
+}
+
+.links {
+    margin-top: 15px;
+}
+
+.links a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+    margin: 0 8px;
+}
+
+.item-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
 }
-.logo { height: 45px; }
-a { text-decoration: none; color: #007bff; font-weight: bold; }
-h2 { color: #333; font-size: 1.3rem; margin-bottom: 5px; }
-p { color: #666; font-size: 0.9rem; margin-bottom: 12px; }
-video { display: none; }
-canvas { width: 100%; height: auto; border-radius: 8px; transform: scaleX(-1); background: #000; display: block; }
-input {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 1rem;
+
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 12px;
 }
-button {
-    padding: 10px 18px;
-    border: none;
-    border-radius: 6px;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 0.95rem;
+
+.header-container h1,
+.header-container h2 {
+    margin: 0;
+    font-size: 36px;
 }
-.btn-blue { background: #007bff; width: 100%; }
-.btn-green { background: #28a745; }
-.btn-red { background: #dc3545; }
+
+.project-logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    border-radius: 8px;
+}

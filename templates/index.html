@@ -1,50 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Shobdo Setu</title>
+    <title>Shobdo Setu - Live Sign Language Translator</title>
     <link rel="stylesheet" href="/static/style.css">
-    
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
+        crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 </head>
+
 <body>
+    <div class="wrapper">
+        <div class="box">
+            <div class="header-container">
+                <img src="/static/logo.png" alt="Shobdo Setu Logo" class="project-logo">
+                <h1>Shobdo Setu</h1>
+            </div>
 
-<div class="wrapper">
-    <div class="box top">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <img src="/static/logo.png" class="logo">
-            <h2>Shobdo Setu</h2>
-        </div>
-        <a href="/submit">+ Record Sign</a>
-    </div>
-
-    <div class="box">
-        <h2>Live Sign Translator</h2>
-        <p>Hold sign for 1 second to add to sentence</p>
-        
-        <video id="webcam" playsinline></video>
-        <canvas id="output_canvas"></canvas>
-
-        <div style="text-align:center; padding:12px; background:#e9ecef; border-radius:6px; margin:12px 0;">
-            <small style="color:#555; font-weight:bold;">DETECTED SIGN:</small>
-            <div id="wordBox" style="font-size:1.4rem; font-weight:bold; color:#007bff;">Waiting...</div>
-        </div>
-
-        <div style="text-align:center; padding:14px; background:#d4edda; border-radius:6px;">
-            <small style="color:#155724; font-weight:bold;">YOUR SENTENCE:</small>
-            <div id="sentenceBox" style="font-size:1.3rem; font-weight:bold; color:#155724; min-height:30px; margin:8px 0;">Start signing...</div>
-            
-            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
-                <button class="btn-green" onclick="speakText()">Speak</button>
-                <button onclick="undoText()" style="background: #fd7e14; padding: 10px 18px; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer;">Undo</button>
-                <button class="btn-red" onclick="clearText()">Clear</button>
+            <div class="links">
+                <a href="/">Translator</a> |
+                <a href="/submit">Submit Sign</a> |
+                <a href="/moderator">Moderator Panel</a>
             </div>
         </div>
-    </div>
-</div>
 
-<script src="/static/script.js"></script>
+        <div class="box">
+            <video id="webcam" playsinline></video>
+            <canvas id="output_canvas"></canvas>
+            <h2>Detected Sign: <span id="wordBox" style="color:#007bff;">Loading...</span></h2>
+            <p style="font-size: 14px; color: #555;">Match Latency: <span id="perfBox">0.00</span> ms | Loaded Signs:
+                <span id="countBox">0</span>
+            </p>
+            <h3>Sentence: <span id="sentenceBox">Start signing...</span></h3>
+            <button class="btn-green" onclick="speakText()">Speak</button>
+            <button class="btn-orange" onclick="undoText()">Undo</button>
+            <button class="btn-red" onclick="clearText()">Clear</button>
+        </div>
+    </div>
+    <script src="/static/script.js"></script>
 </body>
+
 </html>

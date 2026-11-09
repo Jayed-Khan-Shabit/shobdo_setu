@@ -3,9 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Moderator Center - Shobdo Setu</title>
+    <title>Moderator Panel - Shobdo Setu</title>
     <link rel="stylesheet" href="/static/style.css">
-
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
         crossorigin="anonymous"></script>
@@ -13,37 +12,39 @@
 </head>
 
 <body>
-
     <div class="wrapper">
-        <div class="box top">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <img src="/static/logo.png" class="logo">
-                <h2>Moderator Panel</h2>
-            </div>
-            <a href="/">← Back to Translator</a>
-        </div>
         <div class="box">
-            <h2>Publish Official Sign</h2>
-            <p>Show hand to camera, freeze if needed, and publish directly to the dictionary</p>
+            <div class="header-container">
+                <img src="/static/logo.png" alt="Shobdo Setu Logo" class="project-logo">
+                <h1>Moderator Panel</h1>
+            </div>
+            <div class="links">
+                <a href="/">← Back to Translator</a> |
+                <a href="/moderator-logout" style="color: #dc3545;">Logout</a>
+            </div>
+        </div>
 
+        <div class="box">
+            <h3>Record & Publish Official Sign</h3>
             <video id="webcam" playsinline></video>
             <canvas id="output_canvas"></canvas>
+            <p id="statusText" style="font-weight:bold; color:#007bff;">Show hand to camera</p>
+            <button id="freezeBtn" class="btn-orange" onclick="toggleFreeze()">Freeze Sign</button>
+            <br><br>
+            <input type="text" id="signName" placeholder="Enter official word">
+            <button class="btn-green" onclick="publishOfficial()">Publish Directly</button>
+        </div>
 
-            <button type="button" id="freezeBtn" class="btn-blue" style="margin-top: 10px; background: #6c757d;"
-                onclick="toggleFreeze()">Freeze Sign</button>
-            <input type="text" id="offName" placeholder="Sign Word (e.g., Help)">
-            <button class="btn-blue" onclick="addOfficial()">Publish Official Sign</button>
-        </div>
         <div class="box">
-            <h2>Pending Submissions</h2>
-            <div id="pendDiv" style="margin-top: 8px; color: #666; font-size: 0.9rem;">Loading...</div>
+            <h3>Pending User Submissions</h3>
+            <div id="pendingList">Loading...</div>
         </div>
+
         <div class="box">
-            <h2>Approved Vocabulary Database</h2>
-            <div id="apprDiv" style="margin-top: 8px; color: #666; font-size: 0.9rem;">Loading...</div>
+            <h3>Approved Dictionary</h3>
+            <div id="officialList">Loading...</div>
         </div>
     </div>
-
     <script src="/static/moderator.js"></script>
 </body>
 
